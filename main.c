@@ -2,10 +2,10 @@
 
 #include "functii.h"
 
-int main()
+int main(int argc, char* argv[])
 {
     TEAM* head = NULL;
-    createLIST(&head);
+    createLIST(&head,argv);
 
     return 0;
 }
