@@ -1,9 +1,60 @@
 // link tema: https://ocw.cs.pub.ro/courses/sda-ab/tema1
 
-#include "functii.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+struct Player
+{
+    char* firstName;
+    char* secondName;
+    int points;
+};
+
+typedef struct Player PLAY;
+
+struct Team
+{
+    int nr_players;
+    char* teamName;
+    PLAY *p;
+    struct Team *next;
+};
+
+typedef struct Team TEAM;
+
+void createLIST(TEAM **head, FILE *input)
+{   
+    TEAM *newnode = (TEAM *)malloc(sizeof(TEAM));
+    int nr_players, points;
+    char teamName[50], firstName[50], secondName[50];
+    fscanf(input, "%d", &nr_players);
+    newnode->nr_players = nr_players;
+    fgetc(input);
+    fscanf(input, "%[^\n]", teamName);
+    fgetc(input);
+    newnode->teamName = (char *)malloc((strlen(teamName)+1) * sizeof(char));
+    strcpy(newnode->teamName, teamName);
+    newnode->p = (PLAY *)malloc((newnode->nr_players) * sizeof(PLAY));
+    for (int j = 0; j < newnode->nr_players; j++)
+    {
+        fscanf(input, "%s", firstName);
+        fgetc(input);
+        newnode->p[j].firstName = (char *)malloc((strlen(firstName)+1) * sizeof(char));
+        strcpy(newnode->p[j].firstName, firstName);
+        fscanf(input, "%s", secondName);
+        newnode->p[j].secondName = (char *)malloc((strlen(secondName)+1) * sizeof(char));
+        strcpy(newnode->p[j].secondName, secondName);
+        fscanf(input, "%d", &points);
+        newnode->p[j].points = points;
+        fgetc(input);
+    }
+    newnode->next = *head;
+    *head = newnode;
+}
 
 int main(int argc, char *argv[])
-{
+{   
     FILE *c;
     if ((c = fopen(argv[1], "rt")) == NULL)
     {
@@ -31,7 +82,7 @@ int main(int argc, char *argv[])
         for (int i = 0; i < nr_teams; i++)
         {
             createLIST(&head, input);
-            getc(input);
+            fgetc(input);
 
         }
         
@@ -41,13 +92,13 @@ int main(int argc, char *argv[])
             printf("Eroare la deschiderea fisierului rez!\n");
             exit(1);
         }
-        for (int i = 0; i < nr_teams && head!=NULL; i++)
+        TEAM* listHead = head;
+        for (int i = 0; i < nr_teams && listHead!=NULL; i++)
         {  
-            //printf("%s", head->teamName);
-            //fprintf(rez, "%s", head->teamName);
-            head = head->next;
+            fprintf(rez, "%s\n", listHead->teamName);
+            listHead = listHead->next;
         }
-        fclose(input); //BOO!
+        fclose(input); 
         fclose(rez);
         fclose(c);
     }
